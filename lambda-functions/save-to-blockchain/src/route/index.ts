@@ -10,7 +10,7 @@ const router = Router();
 router.get("/", async (req, res) => {
   const num = await simpleStorageContract.methods.get().call();
   const tx = await simpleStorageContract.methods.set(Number(num) + 1);
-  const [gasPrice, gasCost] = await Promise.all([
+  const [gasPrice, gas] = await Promise.all([
     web3.eth.getGasPrice(),
     tx.estimateGas({
       from: admin
@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 
   tx.send({
     from: admin,
-    gas: gasCost,
+    gas,
     gasPrice
   })
     .once("sending", (payload: object) => {
