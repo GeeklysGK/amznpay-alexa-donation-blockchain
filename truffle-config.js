@@ -11,7 +11,7 @@ module.exports = {
       host: "127.0.0.1"
     },
     ropsten: {
-      provider: () => new HDWalletProvider(process.env.MNEMONIC, process.env.RPC_SERVER, 0),
+      provider: () => new HDWalletProvider(process.env.WALLET_PRIVATE_KEY, process.env.RPC_SERVER, 0),
       network_id: 3,
       skipDryRun: true
     },

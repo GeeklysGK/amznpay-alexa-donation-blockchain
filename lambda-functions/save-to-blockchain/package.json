@@ -19,6 +19,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "dist": "yarn run build && cp package.json build/dist && (cd ./build/dist && yarn install --prod)",
     "start:server": "yarn run build && node app.local.js"
   }
 }
