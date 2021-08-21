@@ -1,6 +1,15 @@
 {
-  "name": "AmazonPayDonationBlockchain",
+  "name": "amazonpay-donation-blockchain",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "deploy:dev": "truffle migrate --reset && cp -r client/src/contracts/* lambda-functions/save-to-blockchain/src/contracts/",
+    "deploy:ropsten": "truffle migrate --reset --network ropsten && cp -r client/src/contracts/* lambda-functions/save-to-blockchain/src/contracts/"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^1.4.3",
+    "dotenv": "^10.0.0"
+  }
 }
