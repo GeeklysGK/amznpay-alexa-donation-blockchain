@@ -33,8 +33,6 @@ import {
 import Skeleton from '@material-ui/lab/Skeleton';
 import {AbiItem} from "web3-utils";
 import {Alert} from "@material-ui/lab";
-import useSound from 'use-sound';
-import Sound1 from './assets/sound1.mp3';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -135,9 +133,8 @@ function App() {
   const [total, setTotal] = useState<string>("0");
   const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [notificationText, setNotificationText] = useState("");
+  const [notificationText, setNotificationText] = useState<{ message: string, transactionHash?: string }>({message: ""});
   const classes = useStyles();
-  const [play] = useSound(Sound1);
 
   const calculateTotal = async () => {
     const total = await donationContract.methods.total().call();
@@ -177,10 +174,13 @@ function App() {
     donationContract.events.Donated({
       fromBlock: 'latest'
     }, function (error: any, event: any) {
-      setNotificationText(`今、${amountToJpy(event.returnValues.amount)}の寄付がありました`);
+      console.log(event);
+      setNotificationText({
+        message: `今、${amountToJpy(event.returnValues.amount)}の寄付がありました`,
+        transactionHash: event.transactionHash
+      });
       setNotificationOpen(true);
       calculateTotal().then(r => {
-        play();
       });
     });
     calculateTotal().then(r => setLoading(false));
@@ -199,7 +199,6 @@ function App() {
           <Typography variant="h6" color="inherit" noWrap>
             Amazon Pay Donation on Blockchain
           </Typography>
-          <Button onClick={() => play()}>Test</Button>
         </Toolbar>
       </AppBar>
       <main>
@@ -339,7 +338,10 @@ function App() {
       <Snackbar anchorOrigin={{vertical: "top", horizontal: "right"}} open={notificationOpen} autoHideDuration={10000}
                 onClose={handleCloseNotification}>
         <Alert onClose={handleCloseNotification} severity="success">
-          {notificationText}
+          {notificationText.message} <br />
+          <Typography variant={"caption"}>
+            <Link target={"_blank"} href={`https://ropsten.etherscan.io/tx/${notificationText.transactionHash}`}>{notificationText.transactionHash}</Link>
+          </Typography>
         </Alert>
       </Snackbar>
     </>
