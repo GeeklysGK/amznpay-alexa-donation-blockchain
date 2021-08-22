@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
   heroButtons: {
     marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(2),
   },
   divider: {
     marginTop: theme.spacing(4),
@@ -73,7 +73,7 @@ const ShortId = ({id}: { id: string }) => {
   const end = id.slice(-5);
   return (
     <>
-      {start}...{end}
+      {start}...{end} の寄付金額の検索結果
     </>
   )
 }
@@ -191,33 +191,6 @@ function App() {
             <Divider className={classes.divider}/>
 
             <Grid container spacing={2} xs={12} justifyContent="center">
-              <Grid item xs={8}>
-                <Typography variant="h5" align="center" color="textSecondary" paragraph>
-                  下のテキストにUser Idを入力するといくら寄付をしたのかをブロックチェーンに問い合わせることができます。
-                </Typography>
-                <div className={classes.heroButtons}>
-                  <Grid container spacing={2} justifyContent="center">
-                    <Grid item>
-                      <Typography variant={"body1"}>
-                        sample id: amzn1.account.AENQ5PFWRWURAEY4NV2DU5VRFQBQ
-                      </Typography>
-                      <TextField value={userId}
-                                 onChange={(event) => setUserId(event.target.value)}
-                                 label="User Id" fullWidth/>
-                      <div className={classes.wrapper}>
-                        <Button variant="outlined"
-                                disabled={buttonLoading || !userId}
-                                onClick={handleSearchButton}
-                                color="primary" fullWidth
-                                className={classes.heroButtons}>
-                          検索
-                        </Button>
-                        {buttonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
-                      </div>
-                    </Grid>
-                  </Grid>
-                </div>
-              </Grid>
               <Grid item xs={4}>
                 <Card>
                   <CardHeader title={"Contract Info"}/>
@@ -236,45 +209,93 @@ function App() {
                           primary={"Contract Address"}
                         />
                       </ListItem>
+                      <ListItem>
+                        <ListItemText
+                          primary={"Contract Source"}
+                          secondary={<Link href={"https://github.com/GeeklysGK/amznpay-alexa-donation-blockchain/blob/master/contracts/AmazonPayDonation.sol"} target={"_blank"}>リポジトリで見る</Link>}
+                        />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText
+                          primary={"Page Source"}
+                          secondary={<Link href={"https://github.com/GeeklysGK/amznpay-alexa-donation-blockchain/tree/master/client"} target={"_blank"}>リポジトリで見る</Link>}
+                        />
+                      </ListItem>
                     </List>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={8}>
+                <Card>
+                  <CardHeader title={"寄付検索"}/>
+                  <CardContent>
+                    <Typography variant="h6" align="center" color="textSecondary" paragraph>
+                      Amazon PayのUser Idで検索するといくら寄付をしたのかをブロックチェーンに問い合わせることができます
+                    </Typography>
+                    <div className={classes.heroButtons}>
+                      <Grid container spacing={2} justifyContent="center">
+                        <Grid item>
+                          <Typography variant={"caption"} gutterBottom>
+                            Sample Id: <span>amzn1.account.AENQ5PFWRWURAEY4NV2DU5VRFQBQ</span>
+                          </Typography>
+                          <TextField value={userId}
+                                     onChange={(event) => setUserId(event.target.value)}
+                                     label="Amazon Pay user id" fullWidth/>
+                          <div className={classes.wrapper}>
+                            <Button variant="outlined"
+                                    disabled={buttonLoading || !userId}
+                                    onClick={handleSearchButton}
+                                    color="primary" fullWidth
+                                    className={classes.heroButtons}>
+                              検索
+                            </Button>
+                            {buttonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
+                          </div>
+                        </Grid>
+                      </Grid>
+                    </div>
+
+                    {donationInfo && (
+                      <Container>
+                        <Card>
+                          <CardHeader title={<ShortId id={donationInfo.donationId}/>}/>
+
+                          <CardContent>
+                            <Grid container spacing={4} alignItems={"center"} justifyContent="center">
+                              <Grid item xs={6}>
+                                <Typography align="center"
+                                            variant={"h4"}>合計: {donationInfo.donationTotal}円<br/></Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography align="center"
+                                            variant={"h4"}>寄付回数: {donationInfo.donationCount} 回</Typography>
+                              </Grid>
+                            </Grid>
+                            <Divider className={classes.divider}/>
+                            <TableContainer component={Paper}>
+                              <Table>
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell>Amazon決済ID</TableCell>
+                                    <TableCell>日付</TableCell>
+                                    <TableCell>寄付金額</TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {donationInfo.details}
+                                </TableBody>
+                              </Table>
+                            </TableContainer>
+                          </CardContent>
+                        </Card>
+                      </Container>
+                    )}
+
                   </CardContent>
                 </Card>
               </Grid>
             </Grid>
           </Container>
-
-          {donationInfo && (<Container>
-            <Typography component="h3" variant="h3" align="center" color="textPrimary" gutterBottom>
-              <ShortId id={donationInfo.donationId}/>の寄付金額は
-            </Typography>
-            <Grid container spacing={4} alignItems={"center"} justifyContent="center">
-              <Grid item xs={6}>
-                <Typography>Id: {donationInfo.donationId}</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography variant={"h5"}>金額: {donationInfo.donationTotal}円<br/></Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography variant={"h5"}>寄付回数: {donationInfo.donationCount} 回</Typography>
-              </Grid>
-            </Grid>
-            <Divider className={classes.divider}/>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Amazon決済ID</TableCell>
-                    <TableCell>日付</TableCell>
-                    <TableCell>寄付金額</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {donationInfo.details}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-          </Container>)}
         </div>
       </main>
     </>
