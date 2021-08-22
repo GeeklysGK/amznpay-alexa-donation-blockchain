@@ -226,7 +226,7 @@ function App() {
         <Toolbar>
           <AccessibilityNewIcon className={classes.icon}/>
           <Typography variant="h6" color="inherit" noWrap>
-            Amazon Pay Donation on Blockchain
+            Amazon Pay Donation on Blockchain | 2021 AWS Dev Day Online Japan
           </Typography>
         </Toolbar>
       </AppBar>
