@@ -4,11 +4,18 @@ import AmazonPayDonationJson from "./contracts/AmazonPayDonation.json";
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
 import {
   AppBar,
-  Button, Card, CardContent, CardHeader,
+  Button,
+  Card,
+  CardContent,
+  CardHeader, CircularProgress,
   Container,
   CssBaseline,
   Divider,
-  Grid, Link, List, ListItem, ListItemIcon, ListItemText,
+  Grid,
+  Link,
+  List,
+  ListItem,
+  ListItemText,
   makeStyles,
   Paper,
   Table,
@@ -21,6 +28,7 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import { green } from '@material-ui/core/colors';
 
 import Skeleton from '@material-ui/lab/Skeleton';
 import {AbiItem} from "web3-utils";
@@ -40,6 +48,18 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4)
+  },
+  wrapper: {
+    margin: theme.spacing(1),
+    position: 'relative',
+  },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
   },
 }));
 
@@ -104,6 +124,7 @@ interface DonationInfo {
 function App() {
   const [userId, setUserId] = useState<string | null>("");
   const [loading, setLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [total, setTotal] = useState<string>("0");
   const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
   const classes = useStyles();
@@ -116,6 +137,7 @@ function App() {
 
   const handleSearchButton = async () => {
     if (userId) {
+      setButtonLoading(true);
       const donationCount = await donationContract.methods.countDonation(userId).call();
       if (donationCount > 0) {
         const donationTotal = await donationContract.methods.totalDonation(userId).call();
@@ -128,6 +150,7 @@ function App() {
       } else {
         setDonationInfo({donationId: userId, donationCount, donationTotal: "0", details: []});
       }
+      setButtonLoading(false);
     } else {
       setDonationInfo(null);
     }
@@ -181,10 +204,16 @@ function App() {
                       <TextField value={userId}
                                  onChange={(event) => setUserId(event.target.value)}
                                  label="User Id" fullWidth/>
-                      <Button variant="outlined" onClick={handleSearchButton} color="primary" fullWidth
-                              className={classes.heroButtons}>
-                        検索
-                      </Button>
+                      <div className={classes.wrapper}>
+                        <Button variant="outlined"
+                                disabled={buttonLoading}
+                                onClick={handleSearchButton}
+                                color="primary" fullWidth
+                                className={classes.heroButtons}>
+                          検索
+                        </Button>
+                        {buttonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
+                      </div>
                     </Grid>
                   </Grid>
                 </div>
@@ -213,7 +242,6 @@ function App() {
               </Grid>
             </Grid>
           </Container>
-
 
           {donationInfo && (<Container>
             <Typography component="h3" variant="h3" align="center" color="textPrimary" gutterBottom>
