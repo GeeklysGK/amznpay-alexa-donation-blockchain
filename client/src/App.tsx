@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
 
 const web3 = new Web3("wss://ropsten.infura.io/ws/v3/d19c109a22904d9ba92042f280e0e300");
 const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], AmazonPayDonationJson.networks["3"].address);
+const amountToJpy = (amount: number) => {
+  return new Intl.NumberFormat("ja-JP", {style: 'currency', currency: 'JPY'}).format(amount);
+}
 
 const DonationDetails: React.FC<{ userId: string, count: number }> = ({count, userId}) => {
 
@@ -57,7 +60,8 @@ const DonationDetails: React.FC<{ userId: string, count: number }> = ({count, us
       const date = new Date(result.timestamp * 1000);
       const timeStr = date.toLocaleTimeString("ja-JP")
       const dateStr = date.toLocaleDateString("ja-JP")
-      setDetails({amount: result.amount, oroId: result.oroId, timestamp: `${dateStr} ${timeStr}`});
+      const jpyTotal = amountToJpy(result.amount);
+      setDetails({amount: jpyTotal, oroId: result.oroId, timestamp: `${dateStr} ${timeStr}`});
     });
   }, [count, userId]);
 
@@ -91,7 +95,7 @@ function App() {
 
   const calculateTotal = async () => {
     const total = await donationContract.methods.total().call();
-    const jpyTotal = new Intl.NumberFormat("ja-JP", {style: 'currency', currency: 'JPY'}).format(total);
+    const jpyTotal = amountToJpy(total);
     setTotal(jpyTotal);
   }
 
@@ -100,11 +104,12 @@ function App() {
       const donationCount = await donationContract.methods.countDonation(userId).call();
       if (donationCount > 0) {
         const donationTotal = await donationContract.methods.totalDonation(userId).call();
+        const donationTotalJpy = amountToJpy(donationTotal);
         let rows: ReactNodeArray = [];
         for (let i = 0; i < donationCount; i++) {
           rows.push(<DonationDetails key={i} userId={userId} count={i}/>);
         }
-        setDonationInfo({donationId: userId, donationCount, donationTotal, details: rows});
+        setDonationInfo({donationId: userId, donationCount, donationTotal: donationTotalJpy, details: rows});
       } else {
         setDonationInfo({donationId: userId, donationCount, donationTotal: "0", details: []});
       }
@@ -181,9 +186,9 @@ function App() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Oro Id</TableCell>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Amount</TableCell>
+                    <TableCell>Amazon決済ID</TableCell>
+                    <TableCell>日付</TableCell>
+                    <TableCell>寄付金額</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
