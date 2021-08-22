@@ -1,7 +1,10 @@
 #!/usr/bin/env node
+import * as dotenv from "dotenv";
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
-import { AmznpayChainStack } from '../lib/amznpay-chain-stack';
+import {AmznpayChainStack} from '../lib/amznpay-chain-stack';
+
+dotenv.config({path: "../.env"});
 
 const app = new cdk.App();
 new AmznpayChainStack(app, 'CdkStack', {
@@ -18,4 +21,6 @@ new AmznpayChainStack(app, 'CdkStack', {
   // env: { account: '123456789012', region: 'us-east-1' },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+
+  env: {account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION},
 });
