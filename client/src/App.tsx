@@ -7,7 +7,8 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader, CircularProgress,
+  CardHeader,
+  CircularProgress,
   Container,
   CssBaseline,
   Divider,
@@ -28,7 +29,6 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import { green } from '@material-ui/core/colors';
 
 import Skeleton from '@material-ui/lab/Skeleton';
 import {AbiItem} from "web3-utils";
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
   },
   buttonProgress: {
-    color: green[500],
+    color: theme.palette.primary.dark,
     position: 'absolute',
     top: '50%',
     left: '50%',
