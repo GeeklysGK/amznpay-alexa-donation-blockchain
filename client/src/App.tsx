@@ -220,15 +220,15 @@ function App() {
       <main>
         <div className={classes.heroContent}>
           <Container>
-            <Typography variant={"h3"} align="center" color="textPrimary">合計金額</Typography>
-            <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom>
+            <Typography variant={"h4"} align="center" color="textPrimary">合計金額</Typography>
+            <Typography component="h2" variant="h2" align="center" color="textPrimary" gutterBottom>
               {loading ? <Skeleton animation="wave"/> : <><span>{total}</span>円</>}
             </Typography>
 
             <Divider className={classes.divider}/>
 
             <Grid container spacing={2} justifyContent="center">
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <Card>
                   <CardHeader title={"Contract Info"}/>
                   <CardContent>
@@ -285,7 +285,7 @@ function App() {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={12} md={4}>
                 <Card>
                   <CardHeader title={"寄付検索"}/>
                   <CardContent>
