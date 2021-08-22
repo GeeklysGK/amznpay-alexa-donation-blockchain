@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@vendia/serverless-express": "^4.3.9",
+    "amazon-payments": "https://github.com/johna1203/amazon-payments.git",
     "aws-lambda": "^1.0.6",
     "body-parser": "^1.19.0",
     "dotenv": "^10.0.0",

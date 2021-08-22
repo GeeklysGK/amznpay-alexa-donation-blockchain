@@ -1,0 +1,8 @@
+POST http://localhost:3001/
+Content-Type: application/json
+
+{
+  "accessToken": "{{accessToken}}",
+  "oroId": "P03-XXXXXXX-XXXXXX",
+  "amount": 2500
+}
