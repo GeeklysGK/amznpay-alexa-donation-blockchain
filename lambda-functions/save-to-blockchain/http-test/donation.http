@@ -15,5 +15,5 @@ Content-Type: application/json
 {
   "accessToken": "{{accessToken}}",
   "oroId": "P03-XXXXXXX-XXXXXX",
-  "amount": 5000
+  "amount": 200
 }
