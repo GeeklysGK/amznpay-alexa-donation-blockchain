@@ -110,7 +110,7 @@ function App() {
         const donationTotal = await donationContract.methods.totalDonation(userId).call();
         const donationTotalJpy = amountToJpy(donationTotal);
         let rows: ReactNodeArray = [];
-        for (let i = 0; i < donationCount; i++) {
+        for (let i = donationCount-1; i >= 0; i--) {
           rows.push(<DonationDetails key={i} userId={userId} count={i}/>);
         }
         setDonationInfo({donationId: userId, donationCount, donationTotal: donationTotalJpy, details: rows});
