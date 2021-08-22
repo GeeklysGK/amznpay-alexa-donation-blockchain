@@ -2,7 +2,6 @@ import React, {ReactNodeArray, useEffect, useState} from 'react';
 import Web3 from "web3";
 import AmazonPayDonationJson from "./contracts/AmazonPayDonation.json";
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
-import InfoIcon from '@material-ui/icons/Info';
 import {
   AppBar,
   Button, Card, CardContent, CardHeader,
@@ -20,8 +19,10 @@ import {
   TableRow,
   TextField,
   Toolbar,
-  Typography
+  Typography,
 } from "@material-ui/core";
+
+import Skeleton from '@material-ui/lab/Skeleton';
 import {AbiItem} from "web3-utils";
 
 const useStyles = makeStyles((theme) => ({
@@ -68,7 +69,7 @@ const DonationDetails: React.FC<{ userId: string, count: number }> = ({count, us
   }, [count, userId]);
 
 
-  return <TableRow key={count}>
+  return (<TableRow key={count}>
     <TableCell component="th" scope="row">
       {details.oroId}
     </TableCell>
@@ -78,7 +79,7 @@ const DonationDetails: React.FC<{ userId: string, count: number }> = ({count, us
     <TableCell>
       {details.amount}
     </TableCell>
-  </TableRow>;
+  </TableRow>);
 }
 
 
@@ -91,6 +92,7 @@ interface DonationInfo {
 
 function App() {
   const [userId, setUserId] = useState<string | null>("");
+  const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState<string>("0");
   const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
   const classes = useStyles();
@@ -126,7 +128,7 @@ function App() {
     }, function (error: any, event: any) {
       calculateTotal().then(r => console.log("calculateTotal: Donated event"));
     });
-    calculateTotal().then(r => console.log("calculateTotal"));
+    calculateTotal().then(r => setLoading(false));
     return () => {
       web3.eth.clearSubscriptions(() => {
       })
@@ -147,8 +149,9 @@ function App() {
       <main>
         <div className={classes.heroContent}>
           <Container>
-            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-              合計金額 <span>{total}</span> 円
+            <Typography variant={"h3"} align="center" color="textPrimary">合計金額</Typography>
+            <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom>
+               {loading ? <Skeleton animation="wave"/> : <><span>{total}</span>円</>}
             </Typography>
 
             <Divider className={classes.divider}/>
