@@ -63,6 +63,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -12,
     marginLeft: -12,
   },
+  alert: {
+    marginBottom: theme.spacing(3),
+  }
 }));
 
 const API_SERVER_URL = "https://e355ihy45m.execute-api.ap-northeast-1.amazonaws.com/prod/";
@@ -133,6 +136,8 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [userIdForDonation, setUserIdForDonation] = useState("test");
   const [buttonLoading, setButtonLoading] = useState(false);
+  const [donationButtonLoading, setDonationButtonLoading] = useState(false);
+  const [donationMessage, setDonationMessage] = useState("");
   const [total, setTotal] = useState<string>("0");
   const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -174,6 +179,7 @@ function App() {
   };
 
   const handleDonationButton = () => {
+    setDonationButtonLoading(true);
     axios.post(`${API_SERVER_URL}/sqs`, {
       amount: "500",
       accessToken: "dummy",
@@ -181,9 +187,16 @@ function App() {
       userId: userIdForDonation || "test1"
     }).then((response) => {
       console.log("response", response.data);
+      setDonationMessage("寄付のリクエストを受け取りました、寄付が完了するまでしばらくお待ち下さい。");
+      setTimeout(() => setDonationMessage(""), 6000);
     }).catch((error: any) => {
       console.log("error", error);
-    }).finally(() => console.log("end"));
+    }).finally(() => {
+      setTimeout(() => {
+        setDonationButtonLoading(false)
+      }, 6000);
+
+    });
   }
 
   useEffect(() => {
@@ -233,15 +246,24 @@ function App() {
                   <CardHeader title={"Contract Info"}/>
                   <CardContent>
                     <div>
-                      <Alert>
+                      <Alert color={"warning"} className={classes.alert}>
                         <Typography variant={"caption"}>実際にお金がかかる事はありません！</Typography>
-                        <TextField label={"UserId"} value={userIdForDonation}
-                                   onChange={(e) => setUserIdForDonation(e.target.value)}/>
+                      </Alert>
+
+                      {donationMessage && <Alert className={classes.alert}>{donationMessage}</Alert>}
+
+                      <TextField label={"UserId"} value={userIdForDonation}
+                                 fullWidth
+                                 onChange={(e) => setUserIdForDonation(e.target.value)}/>
+                      <div className={classes.wrapper}>
                         <Button onClick={handleDonationButton}
                                 className={classes.heroButtons}
+                                disabled={donationButtonLoading}
+                                fullWidth
                                 variant={"contained"}
                                 color={"primary"}>５００円寄付してみる</Button>
-                      </Alert>
+                        {donationButtonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
+                      </div>
                     </div>
                     <Divider/>
                     <List>
