@@ -307,7 +307,7 @@ function App() {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={8}>
                 <Card>
                   <CardHeader title={"寄付検索"}/>
                   <CardContent>
