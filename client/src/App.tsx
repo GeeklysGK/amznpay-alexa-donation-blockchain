@@ -2,7 +2,7 @@ import React, {ReactNodeArray, useEffect, useState} from 'react';
 import Web3 from "web3";
 import AmazonPayDonationJson from "./contracts/AmazonPayDonation.json";
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
-import {QUEUE_URL, RPC_NODE_URL} from "./constant";
+import {API_SERVER_URL, RPC_NODE_URL} from "./constant";
 import {
   AppBar,
   Button,
@@ -69,7 +69,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const API_SERVER_URL = QUEUE_URL;
 const web3 = new Web3(RPC_NODE_URL);
 const contractAddress = AmazonPayDonationJson.networks["3"].address;
 const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], contractAddress);
