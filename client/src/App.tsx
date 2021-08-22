@@ -2,13 +2,14 @@ import React, {ReactNodeArray, useEffect, useState} from 'react';
 import Web3 from "web3";
 import AmazonPayDonationJson from "./contracts/AmazonPayDonation.json";
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+import InfoIcon from '@material-ui/icons/Info';
 import {
   AppBar,
-  Button,
+  Button, Card, CardContent, CardHeader,
   Container,
   CssBaseline,
   Divider,
-  Grid,
+  Grid, Link, List, ListItem, ListItemIcon, ListItemText,
   makeStyles,
   Paper,
   Table,
@@ -43,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
 
 
 const web3 = new Web3("wss://ropsten.infura.io/ws/v3/d19c109a22904d9ba92042f280e0e300");
-const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], AmazonPayDonationJson.networks["3"].address);
+const contractAddress = AmazonPayDonationJson.networks["3"].address;
+const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], contractAddress);
 const amountToJpy = (amount: number) => {
   return new Intl.NumberFormat("ja-JP", {style: 'currency', currency: 'JPY'}).format(amount);
 }
@@ -151,25 +153,51 @@ function App() {
 
             <Divider className={classes.divider}/>
 
-            <Typography variant="h5" align="center" color="textSecondary" paragraph>
-              下のテキストにUser Idを入力するといくら寄付をしたのかをブロックチェーンに問い合わせることができます。
-            </Typography>
-            <div className={classes.heroButtons}>
-              <Grid container spacing={2} justifyContent="center">
-                <Grid item>
-                  <Typography variant={"body1"}>
-                    sample id: amzn1.account.AENQ5PFWRWURAEY4NV2DU5VRFQBQ
-                  </Typography>
-                  <TextField value={userId}
-                             onChange={(event) => setUserId(event.target.value)}
-                             label="User Id" fullWidth/>
-                  <Button variant="outlined" onClick={handleSearchButton} color="primary" fullWidth
-                          className={classes.heroButtons}>
-                    検索
-                  </Button>
-                </Grid>
+            <Grid container spacing={2} xs={12} justifyContent="center">
+              <Grid item xs={8}>
+                <Typography variant="h5" align="center" color="textSecondary" paragraph>
+                  下のテキストにUser Idを入力するといくら寄付をしたのかをブロックチェーンに問い合わせることができます。
+                </Typography>
+                <div className={classes.heroButtons}>
+                  <Grid container spacing={2} justifyContent="center">
+                    <Grid item>
+                      <Typography variant={"body1"}>
+                        sample id: amzn1.account.AENQ5PFWRWURAEY4NV2DU5VRFQBQ
+                      </Typography>
+                      <TextField value={userId}
+                                 onChange={(event) => setUserId(event.target.value)}
+                                 label="User Id" fullWidth/>
+                      <Button variant="outlined" onClick={handleSearchButton} color="primary" fullWidth
+                              className={classes.heroButtons}>
+                        検索
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </div>
               </Grid>
-            </div>
+              <Grid item xs={4}>
+                <Card>
+                  <CardHeader title={"Contract Info"}/>
+                  <CardContent>
+                    <List>
+                      <ListItem>
+                        <ListItemText
+                          secondary={"Ropsten"}
+                          primary={"Network"}
+                        />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText
+                          secondary={<Link href={`https://ropsten.etherscan.io/address/${contractAddress}`}
+                                           target={"_blank"}>{contractAddress}</Link>}
+                          primary={"Contract Address"}
+                        />
+                      </ListItem>
+                    </List>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
           </Container>
 
 
