@@ -18,7 +18,7 @@ import {
   ListItem,
   ListItemText,
   makeStyles,
-  Paper,
+  Paper, Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -32,6 +32,9 @@ import {
 
 import Skeleton from '@material-ui/lab/Skeleton';
 import {AbiItem} from "web3-utils";
+import {Alert} from "@material-ui/lab";
+import useSound from 'use-sound';
+import Sound1 from './assets/sound1.mp3';
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -131,7 +134,10 @@ function App() {
   const [buttonLoading, setButtonLoading] = useState(false);
   const [total, setTotal] = useState<string>("0");
   const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationText, setNotificationText] = useState("");
   const classes = useStyles();
+  const [play] = useSound(Sound1);
 
   const calculateTotal = async () => {
     const total = await donationContract.methods.total().call();
@@ -160,11 +166,22 @@ function App() {
     }
   }
 
+  const handleCloseNotification = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setNotificationOpen(false);
+  };
+
   useEffect(() => {
     donationContract.events.Donated({
       fromBlock: 'latest'
     }, function (error: any, event: any) {
-      calculateTotal().then(r => console.log("calculateTotal: Donated event"));
+      setNotificationText(`今、${amountToJpy(event.returnValues.amount)}の寄付がありました`);
+      setNotificationOpen(true);
+      calculateTotal().then(r => {
+        play();
+      });
     });
     calculateTotal().then(r => setLoading(false));
     return () => {
@@ -182,6 +199,7 @@ function App() {
           <Typography variant="h6" color="inherit" noWrap>
             Amazon Pay Donation on Blockchain
           </Typography>
+          <Button onClick={() => play()}>Test</Button>
         </Toolbar>
       </AppBar>
       <main>
@@ -194,7 +212,7 @@ function App() {
 
             <Divider className={classes.divider}/>
 
-            <Grid container spacing={2} xs={12} justifyContent="center">
+            <Grid container spacing={2} justifyContent="center">
               <Grid item xs={4}>
                 <Card>
                   <CardHeader title={"Contract Info"}/>
@@ -216,19 +234,24 @@ function App() {
                       <ListItem>
                         <ListItemText
                           primary={"Contract Source"}
-                          secondary={<Link href={"https://github.com/GeeklysGK/amznpay-alexa-donation-blockchain/blob/master/contracts/AmazonPayDonation.sol"} target={"_blank"}>リポジトリで見る</Link>}
+                          secondary={<Link
+                            href={"https://github.com/GeeklysGK/amznpay-alexa-donation-blockchain/blob/master/contracts/AmazonPayDonation.sol"}
+                            target={"_blank"}>リポジトリで見る</Link>}
                         />
                       </ListItem>
                       <ListItem>
                         <ListItemText
                           primary={"Page Source"}
-                          secondary={<Link href={"https://github.com/GeeklysGK/amznpay-alexa-donation-blockchain/tree/master/client"} target={"_blank"}>リポジトリで見る</Link>}
+                          secondary={<Link
+                            href={"https://github.com/GeeklysGK/amznpay-alexa-donation-blockchain/tree/master/client"}
+                            target={"_blank"}>リポジトリで見る</Link>}
                         />
                       </ListItem>
                       <ListItem>
                         <ListItemText
                           primary={"Document"}
-                          secondary={<Link href={"https://johna1203.gitbook.io/amazon-pay-for-alexa"} target={"_blank"}>Gitbook</Link>}
+                          secondary={<Link href={"https://johna1203.gitbook.io/amazon-pay-for-alexa"}
+                                           target={"_blank"}>Gitbook</Link>}
                         />
                       </ListItem>
                     </List>
@@ -248,7 +271,7 @@ function App() {
                           <Typography variant={"caption"} gutterBottom>
                             Sample Id1: <span>amzn1.account.AENQ5PFWRWURAEY4NV2DU5VRFQBQ</span>
                           </Typography>
-                          <br />
+                          <br/>
                           <Typography variant={"caption"} gutterBottom>
                             Sample Id2: <span>amzn1.account.AFYWLLBQXZ32EFHVUCFC47MXQKBA</span>
                           </Typography>
@@ -312,6 +335,13 @@ function App() {
           </Container>
         </div>
       </main>
+
+      <Snackbar anchorOrigin={{vertical: "top", horizontal: "right"}} open={notificationOpen} autoHideDuration={10000}
+                onClose={handleCloseNotification}>
+        <Alert onClose={handleCloseNotification} severity="success">
+          {notificationText}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
