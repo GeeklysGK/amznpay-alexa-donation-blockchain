@@ -12,7 +12,7 @@ const amazonPayDonationContract = new web3.eth.Contract(
 
 const amazonPay = AmazonPay.connect({
   environment: AmazonPay.Environment.Production,
-  clientId: "amzn1.application-oa2-client.c628622e2d4f478cb8f8b343493cbc8c"
+  clientId: process.env.AMAZON_PAY_CLIENT_ID || "amzn1.application-oa2-client.c628622e2d4f478cb8f8b343493cbc8c"
 });
 
 const router = Router();
@@ -64,7 +64,8 @@ router.post("/", async (req, res) => {
     (error: any, accessToken: any) => {
       if (error) {
         res.json({
-          error: error.message
+          error: error.message,
+          type: "getProfile:error"
         });
         return;
       }
@@ -75,7 +76,8 @@ router.post("/", async (req, res) => {
         })
       }).catch(error => {
         res.json({
-          error: error.methods
+          error: error.message,
+          type: "writeToBlockChain:error"
         })
       });
     });

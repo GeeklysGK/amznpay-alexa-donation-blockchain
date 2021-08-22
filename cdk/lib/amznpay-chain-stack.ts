@@ -31,7 +31,8 @@ export class AmznpayChainStack extends cdk.Stack {
       environment: {
         NODE_ENV: process.env["NODE_ENV"] || "dev",
         WALLET_PRIVATE_KEY: process.env["WALLET_PRIVATE_KEY"] || "",
-        RPC_SERVER: process.env["RPC_SERVER"] || ""
+        RPC_SERVER: process.env["RPC_SERVER"] || "",
+        AMAZON_PAY_CLIENT_ID: process.env["AMAZON_PAY_CLIENT_ID"] || ""
       }
     });
 
