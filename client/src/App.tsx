@@ -225,6 +225,12 @@ function App() {
                           secondary={<Link href={"https://github.com/GeeklysGK/amznpay-alexa-donation-blockchain/tree/master/client"} target={"_blank"}>リポジトリで見る</Link>}
                         />
                       </ListItem>
+                      <ListItem>
+                        <ListItemText
+                          primary={"Document"}
+                          secondary={<Link href={"https://johna1203.gitbook.io/amazon-pay-for-alexa"} target={"_blank"}>Gitbook</Link>}
+                        />
+                      </ListItem>
                     </List>
                   </CardContent>
                 </Card>
