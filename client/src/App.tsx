@@ -6,9 +6,17 @@ import {
   AppBar,
   Button,
   Container,
-  CssBaseline, Divider,
+  CssBaseline,
+  Divider,
   Grid,
-  makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  makeStyles,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Toolbar,
   Typography
@@ -25,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
   heroButtons: {
     marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(4),
   },
   divider: {
     marginTop: theme.spacing(4),
@@ -33,23 +42,32 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const web3 = new Web3("https://ropsten.infura.io/v3/d19c109a22904d9ba92042f280e0e300");
+const web3 = new Web3("wss://ropsten.infura.io/ws/v3/d19c109a22904d9ba92042f280e0e300");
 const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], AmazonPayDonationJson.networks["3"].address);
 
 const DonationDetails: React.FC<{ userId: string, count: number }> = ({count, userId}) => {
 
-  const [details, setDetails] = useState<{ amount: string, oroId: string }>({amount: "0", oroId: "none"});
+  const [details, setDetails] = useState<{ amount: string, oroId: string, timestamp?: string }>({
+    amount: "0",
+    oroId: "none"
+  });
 
   useEffect(() => {
     donationContract.methods.donations(userId, count).call().then((result: any) => {
-      setDetails({amount: result.amount, oroId: result.oroId});
+      const date = new Date(result.timestamp * 1000);
+      const timeStr = date.toLocaleTimeString("ja-JP")
+      const dateStr = date.toLocaleDateString("ja-JP")
+      setDetails({amount: result.amount, oroId: result.oroId, timestamp: `${dateStr} ${timeStr}`});
     });
-  }, [count]);
+  }, [count, userId]);
 
 
   return <TableRow key={count}>
     <TableCell component="th" scope="row">
       {details.oroId}
+    </TableCell>
+    <TableCell>
+      {details.timestamp}
     </TableCell>
     <TableCell>
       {details.amount}
@@ -67,8 +85,15 @@ interface DonationInfo {
 
 function App() {
   const [userId, setUserId] = useState<string | null>("");
+  const [total, setTotal] = useState<string>("0");
   const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
   const classes = useStyles();
+
+  const calculateTotal = async () => {
+    const total = await donationContract.methods.total().call();
+    const jpyTotal = new Intl.NumberFormat("ja-JP", {style: 'currency', currency: 'JPY'}).format(total);
+    setTotal(jpyTotal);
+  }
 
   const handleSearchButton = async () => {
     if (userId) {
@@ -88,6 +113,19 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    donationContract.events.Donated({
+      fromBlock: 'latest'
+    }, function (error: any, event: any) {
+      calculateTotal().then(r => console.log("calculateTotal: Donated event"));
+    });
+    calculateTotal().then(r => console.log("calculateTotal"));
+    return () => {
+      web3.eth.clearSubscriptions(() => {
+      })
+    }
+  }, []);
+
 
   return (<>
       <CssBaseline/>
@@ -101,10 +139,13 @@ function App() {
       </AppBar>
       <main>
         <div className={classes.heroContent}>
-          <Container maxWidth="sm">
+          <Container>
             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-              寄付検索
+              合計金額 <span>{total}</span> 円
             </Typography>
+
+            <Divider className={classes.divider}/>
+
             <Typography variant="h5" align="center" color="textSecondary" paragraph>
               下のテキストにUser Idを入力するといくら寄付をしたのかをブロックチェーンに問い合わせることができます。
             </Typography>
@@ -124,9 +165,7 @@ function App() {
           </Container>
 
 
-          {donationInfo && (<Container maxWidth="sm">
-            <Divider className={classes.divider}/>
-
+          {donationInfo && (<Container>
             <Typography component="h3" variant="h3" align="center" color="textPrimary" gutterBottom>
               {donationInfo.donationId}の寄付金額は
             </Typography>
@@ -143,6 +182,7 @@ function App() {
                 <TableHead>
                   <TableRow>
                     <TableCell>Oro Id</TableCell>
+                    <TableCell>Date</TableCell>
                     <TableCell>Amount</TableCell>
                   </TableRow>
                 </TableHead>
