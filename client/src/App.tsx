@@ -47,6 +47,17 @@ const useStyles = makeStyles((theme) => ({
 const web3 = new Web3("wss://ropsten.infura.io/ws/v3/d19c109a22904d9ba92042f280e0e300");
 const contractAddress = AmazonPayDonationJson.networks["3"].address;
 const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], contractAddress);
+
+const ShortId = ({id}: { id: string }) => {
+  const start = id.slice(0, 10);
+  const end = id.slice(-5);
+  return (
+    <>
+      {start}...{end}
+    </>
+  )
+}
+
 const amountToJpy = (amount: number) => {
   return new Intl.NumberFormat("ja-JP", {style: 'currency', currency: 'JPY'}).format(amount);
 }
@@ -110,7 +121,7 @@ function App() {
         const donationTotal = await donationContract.methods.totalDonation(userId).call();
         const donationTotalJpy = amountToJpy(donationTotal);
         let rows: ReactNodeArray = [];
-        for (let i = donationCount-1; i >= 0; i--) {
+        for (let i = donationCount - 1; i >= 0; i--) {
           rows.push(<DonationDetails key={i} userId={userId} count={i}/>);
         }
         setDonationInfo({donationId: userId, donationCount, donationTotal: donationTotalJpy, details: rows});
@@ -151,7 +162,7 @@ function App() {
           <Container>
             <Typography variant={"h3"} align="center" color="textPrimary">合計金額</Typography>
             <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom>
-               {loading ? <Skeleton animation="wave"/> : <><span>{total}</span>円</>}
+              {loading ? <Skeleton animation="wave"/> : <><span>{total}</span>円</>}
             </Typography>
 
             <Divider className={classes.divider}/>
@@ -206,16 +217,20 @@ function App() {
 
           {donationInfo && (<Container>
             <Typography component="h3" variant="h3" align="center" color="textPrimary" gutterBottom>
-              {donationInfo.donationId}の寄付金額は
+              <ShortId id={donationInfo.donationId}/>の寄付金額は
             </Typography>
             <Grid container spacing={4} alignItems={"center"} justifyContent="center">
-              <Grid item xs={5}>
-                金額: {donationInfo.donationTotal}円<br/>
+              <Grid item xs={6}>
+                <Typography>Id: {donationInfo.donationId}</Typography>
               </Grid>
-              <Grid item xs={5}>
-                寄付回数: {donationInfo.donationCount} 回
+              <Grid item xs={3}>
+                <Typography variant={"h5"}>金額: {donationInfo.donationTotal}円<br/></Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant={"h5"}>寄付回数: {donationInfo.donationCount} 回</Typography>
               </Grid>
             </Grid>
+            <Divider className={classes.divider}/>
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
