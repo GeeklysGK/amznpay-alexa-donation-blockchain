@@ -3,3 +3,5 @@
 !jest.config.js
 *.d.ts
 build
+!sqs.local.js
+!app.local.js

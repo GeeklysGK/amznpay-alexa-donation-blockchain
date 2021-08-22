@@ -8,8 +8,28 @@ Content-Type: application/json
   "amount": 2500
 }
 
+### Send POST to local
+POST http://localhost:3001/sqs
+Content-Type: application/json
+
+{
+  "accessToken": "{{accessToken}}",
+  "oroId": "P03-XXXXXXX-XXXXXX",
+  "amount": 2500
+}
+
 ### Send POST request to api gateway
-POST https://vl47w68hr6.execute-api.ap-northeast-1.amazonaws.com/prod/
+POST https://oqw678sx72.execute-api.ap-northeast-1.amazonaws.com/prod/
+Content-Type: application/json
+
+{
+  "accessToken": "{{accessToken}}",
+  "oroId": "P03-XXXXXXX-XXXXXX",
+  "amount": 500
+}
+
+### Send POST request to api gateway
+POST https://e355ihy45m.execute-api.ap-northeast-1.amazonaws.com/prod/sqs
 Content-Type: application/json
 
 {

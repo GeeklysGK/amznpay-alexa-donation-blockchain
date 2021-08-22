@@ -1,14 +1,9 @@
 import {Router} from "express";
-import web3, {admin} from "../utils/GetWeb3";
-import AmazonPayDonation from "../contracts/AmazonPayDonation.json";
-import {AbiItem} from "web3-utils";
 import * as AmazonPay from "amazon-payments";
-
-const networkId = "3";
-const amazonPayDonationContract = new web3.eth.Contract(
-  AmazonPayDonation.abi as AbiItem[],
-  AmazonPayDonation.networks[networkId].address
-);
+import {writeToBlockChain} from "../utils";
+import * as AWS from 'aws-sdk';
+const SQS = new AWS.SQS({region: 'ap-northeast-1'});
+const QueueUrl = process.env.QUEUE_URL || '';
 
 const amazonPay = AmazonPay.connect({
   environment: AmazonPay.Environment.Production,
@@ -17,70 +12,66 @@ const amazonPay = AmazonPay.connect({
 
 const router = Router();
 
-const writeToBlockChain = (userId: string, oroId: string, amount: number) => {
-  return new Promise(async (resolve, reject) => {
-    const tx = await amazonPayDonationContract.methods.saveDonation(
-      [userId, oroId, amount, 0]
-    );
-
-    try {
-      const [gasPrice, gas] = await Promise.all([
-        web3.eth.getGasPrice(),
-        tx.estimateGas({
-          from: admin
-        }),
-      ]);
-
-      tx.send({
-        from: admin,
-        gas,
-        gasPrice
-      })
-        .once("sending", (payload: object) => {
-          console.log("sending");
-        })
-        .once("transactionHash", (transactionHash: string) => {
-          resolve(transactionHash);
-        })
-        .once("error", (error: Error) => {
-          reject(error);
-        });
-    } catch (e) {
-      //ignore
-      reject(e);
-    }
-  });
-}
 
 router.post("/", async (req, res) => {
-
-  console.log(req.body);
-
+  console.log("POST", req.body);
   const accessToken = req.body.accessToken;
   const oroId = req.body.oroId;
   const amount = req.body.amount;
 
-  amazonPay.api.getProfile(accessToken,
-    (error: any, accessToken: any) => {
-      if (error) {
-        res.json({
-          error: error.message,
-          type: "getProfile:error"
-        });
-        return;
-      }
-
-      writeToBlockChain(accessToken.user_id, oroId, amount).then((transactionHash) => {
-        res.json({
-          hash: transactionHash
-        })
-      }).catch(error => {
-        res.json({
-          error: error.message,
-          type: "writeToBlockChain:error"
-        })
-      });
+  if (accessToken === "dummy") {
+    const userId = req.body.userId;
+    writeToBlockChain(userId, oroId, amount).then((transactionHash) => {
+      res.json({
+        hash: transactionHash
+      })
+    }).catch(error => {
+      res.json({
+        error: error.message,
+        type: "writeToBlockChain:error"
+      })
     });
+  } else {
+    amazonPay.api.getProfile(accessToken,
+      (error: any, accessToken: any) => {
+        if (error) {
+          res.json({
+            error: error.message,
+            type: "getProfile:error"
+          });
+          return;
+        }
+
+        writeToBlockChain(accessToken.user_id, oroId, amount).then((transactionHash) => {
+          res.json({
+            hash: transactionHash
+          })
+        }).catch(error => {
+          res.json({
+            error: error.message,
+            type: "writeToBlockChain:error"
+          })
+        });
+      });
+  }
+});
+
+router.post("/sqs", async (req, res) => {
+  try {
+    const sendMessage = await SQS.sendMessage({MessageBody: JSON.stringify(req.body), QueueUrl}).promise();
+    return res.json({
+      status: 200,
+      body: sendMessage
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: 502,
+      message: error
+    });
+  }
+
+
 });
 
 export default router;

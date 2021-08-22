@@ -33,6 +33,7 @@ import {
 import Skeleton from '@material-ui/lab/Skeleton';
 import {AbiItem} from "web3-utils";
 import {Alert} from "@material-ui/lab";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -64,7 +65,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
+const API_SERVER_URL = "https://e355ihy45m.execute-api.ap-northeast-1.amazonaws.com/prod/";
+// const API_SERVER_URL = "http://localhost:3001/";
 const web3 = new Web3("wss://ropsten.infura.io/ws/v3/d19c109a22904d9ba92042f280e0e300");
 const contractAddress = AmazonPayDonationJson.networks["3"].address;
 const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], contractAddress);
@@ -129,6 +131,7 @@ interface DonationInfo {
 function App() {
   const [userId, setUserId] = useState<string | null>("");
   const [loading, setLoading] = useState(true);
+  const [userIdForDonation, setUserIdForDonation] = useState("test");
   const [buttonLoading, setButtonLoading] = useState(false);
   const [total, setTotal] = useState<string>("0");
   const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
@@ -169,6 +172,19 @@ function App() {
     }
     setNotificationOpen(false);
   };
+
+  const handleDonationButton = () => {
+    axios.post(`${API_SERVER_URL}/sqs`, {
+      amount: "500",
+      accessToken: "dummy",
+      oroId: "DONATION-FROM-WEB",
+      userId: userIdForDonation || "test1"
+    }).then((response) => {
+      console.log("response", response.data);
+    }).catch((error: any) => {
+      console.log("error", error);
+    }).finally(() => console.log("end"));
+  }
 
   useEffect(() => {
     donationContract.events.Donated({
@@ -216,6 +232,18 @@ function App() {
                 <Card>
                   <CardHeader title={"Contract Info"}/>
                   <CardContent>
+                    <div>
+                      <Alert>
+                        <Typography variant={"caption"}>実際にお金がかかる事はありません！</Typography>
+                        <TextField label={"UserId"} value={userIdForDonation}
+                                   onChange={(e) => setUserIdForDonation(e.target.value)}/>
+                        <Button onClick={handleDonationButton}
+                                className={classes.heroButtons}
+                                variant={"contained"}
+                                color={"primary"}>５００円寄付してみる</Button>
+                      </Alert>
+                    </div>
+                    <Divider/>
                     <List>
                       <ListItem>
                         <ListItemText
@@ -338,9 +366,10 @@ function App() {
       <Snackbar anchorOrigin={{vertical: "top", horizontal: "right"}} open={notificationOpen} autoHideDuration={10000}
                 onClose={handleCloseNotification}>
         <Alert onClose={handleCloseNotification} severity="success">
-          {notificationText.message} <br />
+          {notificationText.message} <br/>
           <Typography variant={"caption"}>
-            <Link target={"_blank"} href={`https://ropsten.etherscan.io/tx/${notificationText.transactionHash}`}>{notificationText.transactionHash}</Link>
+            <Link target={"_blank"}
+                  href={`https://ropsten.etherscan.io/tx/${notificationText.transactionHash}`}>{notificationText.transactionHash}</Link>
           </Typography>
         </Alert>
       </Snackbar>
