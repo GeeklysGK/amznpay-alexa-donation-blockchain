@@ -157,6 +157,9 @@ function App() {
             <div className={classes.heroButtons}>
               <Grid container spacing={2} justifyContent="center">
                 <Grid item>
+                  <Typography variant={"body1"}>
+                    sample id: amzn1.account.AENQ5PFWRWURAEY4NV2DU5VRFQBQ
+                  </Typography>
                   <TextField value={userId}
                              onChange={(event) => setUserId(event.target.value)}
                              label="User Id" fullWidth/>
