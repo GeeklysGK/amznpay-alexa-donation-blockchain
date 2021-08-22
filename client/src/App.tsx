@@ -2,6 +2,7 @@ import React, {ReactNodeArray, useEffect, useState} from 'react';
 import Web3 from "web3";
 import AmazonPayDonationJson from "./contracts/AmazonPayDonation.json";
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
+import {QUEUE_URL, RPC_NODE_URL} from "./constant";
 import {
   AppBar,
   Button,
@@ -68,9 +69,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const API_SERVER_URL = "https://e355ihy45m.execute-api.ap-northeast-1.amazonaws.com/prod/";
-// const API_SERVER_URL = "http://localhost:3001/";
-const web3 = new Web3("wss://ropsten.infura.io/ws/v3/d19c109a22904d9ba92042f280e0e300");
+const API_SERVER_URL = QUEUE_URL;
+const web3 = new Web3(RPC_NODE_URL);
 const contractAddress = AmazonPayDonationJson.networks["3"].address;
 const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], contractAddress);
 
@@ -226,7 +226,7 @@ function App() {
         <Toolbar>
           <AccessibilityNewIcon className={classes.icon}/>
           <Typography variant="h6" color="inherit" noWrap>
-            Amazon Pay Donation on Blockchain | 2021 AWS Dev Day Online Japan | {process.env.REACT_APP_QUEUE_URL}
+            Amazon Pay Donation on Blockchain | 2021 AWS Dev Day Online Japan
           </Typography>
         </Toolbar>
       </AppBar>
