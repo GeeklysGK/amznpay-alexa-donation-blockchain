@@ -69,11 +69,15 @@ const contractAddress = AmazonPayDonationJson.networks["3"].address;
 const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], contractAddress);
 
 const ShortId = ({id}: { id: string }) => {
-  const start = id.slice(0, 10);
-  const end = id.slice(-5);
+  let showId = id;
+  if (id.length > 5) {
+    const start = id.slice(0, 10);
+    const end = id.slice(-5);
+    showId = `${start}...${end}`;
+  }
   return (
     <>
-      {start}...{end} の寄付金額の検索結果
+      {showId} の寄付金額の検索結果
     </>
   )
 }
