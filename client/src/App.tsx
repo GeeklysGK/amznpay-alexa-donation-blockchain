@@ -206,7 +206,7 @@ function App() {
                                  label="User Id" fullWidth/>
                       <div className={classes.wrapper}>
                         <Button variant="outlined"
-                                disabled={buttonLoading}
+                                disabled={buttonLoading || !userId}
                                 onClick={handleSearchButton}
                                 color="primary" fullWidth
                                 className={classes.heroButtons}>
