@@ -76,7 +76,7 @@ const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiI
 
 const ShortId = ({id}: { id: string }) => {
   let showId = id;
-  if (id.length > 5) {
+  if (id.length > 15) {
     const start = id.slice(0, 10);
     const end = id.slice(-5);
     showId = `${start}...${end}`;
