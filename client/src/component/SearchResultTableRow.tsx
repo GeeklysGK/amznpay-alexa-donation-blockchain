@@ -9,19 +9,24 @@ interface DonationDetailsProps {
   count: number;
 }
 
-type Donation = { userId: string; timestamp: number; amount: number; };
+type Donation = { userId: string; timestamp: number; datetime:string; amount: number; };
 
 const TransactionTableRow: React.FC<DonationDetailsProps> = ({ userId, count }) => {
 
   const [detail, setDetail] = useState<Donation>({
     userId: userId,
     timestamp: 0,
-    amount: 0
+    amount: 0,
+    datetime: ""
   });
 
   useEffect(() => {
     donationContract.methods.donations(userId, count).call()
-      .then((donation: Donation) => setDetail(donation));
+      .then((donation: Donation) => {
+        const date = new Date(donation.timestamp * 1000);
+        const datetime = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        setDetail({...donation, datetime: datetime});
+      });
   }, [userId, count]);
 
   return (<TableRow>
@@ -29,7 +34,7 @@ const TransactionTableRow: React.FC<DonationDetailsProps> = ({ userId, count }) 
       <ShortId id={detail.userId}/>
     </TableCell>
     <TableCell component="th" scope="row">
-      {detail.timestamp}
+      {detail.datetime}
     </TableCell>
     <TableCell component="th" scope="row">
       {amountToJpy(detail.amount)}
