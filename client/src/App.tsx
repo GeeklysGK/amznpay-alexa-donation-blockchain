@@ -162,7 +162,7 @@ function App() {
     }, function (error: any, event: EventData) {
       const {userId, amount} = event.returnValues;
       setNotificationText({
-        message: `${userId}} から ${amountToJpy(amount)} の寄付がありました`,
+        message: `${userId} から ${amountToJpy(amount)} の寄付がありました`,
         transactionHash: event.transactionHash
       });
       setNotificationOpen(true);
