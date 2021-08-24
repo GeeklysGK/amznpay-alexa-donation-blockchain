@@ -34,10 +34,6 @@ contract AmazonPayDonation {
     emit Donated(donationInfo.userId, donationInfo.oroId, donationInfo.amount);
   }
 
-  function getDonation(string memory userId) public view returns (Donation[] memory) {
-    return donations[userId];
-  }
-
   function countDonation(string memory userId) public view returns (uint) {
     return donations[userId].length;
   }

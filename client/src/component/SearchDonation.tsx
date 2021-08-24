@@ -8,26 +8,21 @@ import {
   Divider,
   Grid,
   makeStyles,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography
 } from "@material-ui/core";
-import React, { ReactNodeArray, useState } from "react";
+import React, { useState } from "react";
 import amountToJpy from "../utils/amountToJpy";
 import donationContract from "../utils/donationContract";
 import ShortId from "./ShortId";
+import SearchResultTable from "./SearchResultTable";
+import SearchResultTableRow from "./SearchResultTableRow";
 
 interface DonationInfo {
   donationId: string;
   donationCount: string;
   donationTotal: string;
-  details: ReactNodeArray
+  rows: any[]
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -77,13 +72,13 @@ const SearchDonation = () => {
       if (donationCount > 0) {
         const donationTotal = await donationContract.methods.totalDonation(userId).call();
         const donationTotalJpy = amountToJpy(donationTotal);
-        let rows: ReactNodeArray = [];
+        let rows: any[] = [];
         for (let i = donationCount - 1; i >= 0; i--) {
-          // rows.push(<DonationDetails key={i} userId={userId} count={i}/>);
+          rows.push(<SearchResultTableRow key={i} userId={userId} count={i}/>);
         }
-        setDonationInfo({ donationId: userId, donationCount, donationTotal: donationTotalJpy, details: rows });
+        setDonationInfo({ donationId: userId, donationCount, donationTotal: donationTotalJpy, rows: rows });
       } else {
-        setDonationInfo({ donationId: userId, donationCount, donationTotal: "0", details: [] });
+        setDonationInfo({ donationId: userId, donationCount, donationTotal: "0", rows: [] });
       }
       setButtonLoading(false);
     } else {
@@ -128,37 +123,20 @@ const SearchDonation = () => {
 
         {donationInfo && (
           <Container>
-            <Card>
-              <CardHeader title={<ShortId id={donationInfo.donationId}/>}/>
+            <Typography><ShortId id={donationInfo.donationId}/></Typography>
 
-              <CardContent>
-                <Grid container spacing={4} alignItems={"center"} justifyContent="center">
-                  <Grid item xs={6}>
-                    <Typography align="center"
-                                variant={"h4"}>合計: {donationInfo.donationTotal}円<br/></Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography align="center"
-                                variant={"h4"}>寄付回数: {donationInfo.donationCount} 回</Typography>
-                  </Grid>
-                </Grid>
-                <Divider className={classes.divider}/>
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Amazon決済ID</TableCell>
-                        <TableCell>日付</TableCell>
-                        <TableCell>寄付金額</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {donationInfo.details}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>
-            </Card>
+            <Grid container spacing={4} alignItems={"center"} justifyContent="center">
+              <Grid item xs={6}>
+                <Typography align="center"
+                            variant={"h4"}>合計: {donationInfo.donationTotal}円<br/></Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="center"
+                            variant={"h4"}>寄付回数: {donationInfo.donationCount} 回</Typography>
+              </Grid>
+            </Grid>
+            <Divider className={classes.divider}/>
+            <SearchResultTable rows={donationInfo.rows}/>
           </Container>
         )}
 

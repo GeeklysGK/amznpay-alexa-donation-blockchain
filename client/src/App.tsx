@@ -160,7 +160,6 @@ function App() {
   useEffect(() => {
     donationContract.events.Donated({
       fromBlock: 'latest',
-      toBlock: 'pending'
     }, function (error: any, event: EventData) {
       const {userId, amount} = event.returnValues;
       setNotificationText({
@@ -174,7 +173,8 @@ function App() {
     });
 
     donationContract.getPastEvents("Donated", {
-      fromBlock: 0
+      fromBlock: 0,
+      toBlock: "latest"
     },).then((events) => {
       setTransactions(events.reverse());
     })
