@@ -3,6 +3,7 @@ import { TableCell, TableRow } from "@material-ui/core";
 import ShortId from "./ShortId";
 import amountToJpy from "../utils/amountToJpy";
 import donationContract from "../utils/donationContract";
+import timestampToDatetime from "../utils/timestampToDatetime";
 
 interface DonationDetailsProps {
   userId: string;
@@ -23,8 +24,7 @@ const TransactionTableRow: React.FC<DonationDetailsProps> = ({ userId, count }) 
   useEffect(() => {
     donationContract.methods.donations(userId, count).call()
       .then((donation: Donation) => {
-        const date = new Date(donation.timestamp * 1000);
-        const datetime = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        const datetime = timestampToDatetime(Number(donation.timestamp));
         setDetail({...donation, datetime: datetime});
       });
   }, [userId, count]);
