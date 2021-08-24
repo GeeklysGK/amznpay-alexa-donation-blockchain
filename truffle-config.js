@@ -13,7 +13,8 @@ module.exports = {
     ropsten: {
       provider: () => new HDWalletProvider(process.env.WALLET_PRIVATE_KEY, process.env.RPC_SERVER, 0),
       network_id: 3,
-      skipDryRun: true
+      skipDryRun: true,
+      networkCheckTimeout: 999999
     },
   },
   compilers: {
