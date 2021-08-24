@@ -16,9 +16,7 @@ exports.handler = async (event: SQSEvent, context: Context, callback: Callback) 
       const userId = json.userId || "test";
 
       try {
-        const tx = await writeToBlockChain(userId, json.oroId, json.amount);
-        console.log(tx);
-        message.receiptHandle
+        await writeToBlockChain(userId, json.oroId, json.amount);
         await SQS.deleteMessage({
           QueueUrl,
           ReceiptHandle: message.receiptHandle

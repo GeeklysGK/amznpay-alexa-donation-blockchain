@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import React from "react";
-import DonationDetails from "./DonationDetails";
+import TransactionTableRow from "./TransactionTableRow";
 import { EventData } from "web3-eth-contract";
 
 type TransactionTableProps = {
@@ -12,14 +12,14 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ items }) => {
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>Amazon決済ID</TableCell>
-          <TableCell>日付</TableCell>
+          <TableCell>Transaction Id</TableCell>
+          <TableCell>AmazonPay注文ID</TableCell>
           <TableCell>寄付金額</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {items.map((item, index) => {
-          return <DonationDetails key={index} transaction={item}/>
+          return <TransactionTableRow key={index} transaction={item}/>
         })}
       </TableBody>
     </Table>

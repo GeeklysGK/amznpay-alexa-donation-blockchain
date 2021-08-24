@@ -1,6 +1,6 @@
-import web3, {admin} from "./GetWeb3";
+import web3, { admin } from "./GetWeb3";
 import AmazonPayDonation from "../contracts/AmazonPayDonation.json";
-import {AbiItem} from "web3-utils";
+import { AbiItem } from "web3-utils";
 
 const networkId = "3";
 export const amazonPayDonationContract = new web3.eth.Contract(

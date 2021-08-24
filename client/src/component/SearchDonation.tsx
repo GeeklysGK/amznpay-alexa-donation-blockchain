@@ -3,15 +3,24 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CircularProgress, Container, Divider,
-  Grid, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  CircularProgress,
+  Container,
+  Divider,
+  Grid,
+  makeStyles,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography
 } from "@material-ui/core";
 import React, { ReactNodeArray, useState } from "react";
 import amountToJpy from "../utils/amountToJpy";
 import donationContract from "../utils/donationContract";
-import DonationDetails from "./DonationDetails";
 import ShortId from "./ShortId";
 
 interface DonationInfo {

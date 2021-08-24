@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Web3 from "web3";
-import AmazonPayDonationJson from "./contracts/AmazonPayDonation.json";
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
-import { API_SERVER_URL, RPC_NODE_URL } from "./constant";
+import { API_SERVER_URL } from "./constant";
 import {
-  AppBar, Box,
+  AppBar,
+  Box,
   Button,
   Card,
   CardContent,
@@ -19,21 +18,22 @@ import {
   ListItem,
   ListItemText,
   makeStyles,
-  Snackbar, Tab, Tabs,
+  Snackbar,
+  Tab,
+  Tabs,
   TextField,
   Toolbar,
   Typography,
 } from "@material-ui/core";
 
 import Skeleton from '@material-ui/lab/Skeleton';
-import { AbiItem } from "web3-utils";
 import { Alert } from "@material-ui/lab";
 import axios from "axios";
 import { EventData } from "web3-eth-contract";
 import donationContract, { contractAddress } from "./utils/donationContract";
 import amountToJpy from "./utils/amountToJpy";
 import SearchDonation from "./component/SearchDonation";
-import TransactionHistory from "./component/TransactionHistory";
+import TransactionTable from "./component/TransactionTable";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -103,19 +103,25 @@ function a11yProps(index: any) {
 
 function App() {
 
+  const [transactions, setTransactions] = useState<EventData[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [tabValue, setTabValue] = React.useState(0);
+
   const [userIdForDonation, setUserIdForDonation] = useState("test");
   const [donationButtonLoading, setDonationButtonLoading] = useState(false);
   const [donationMessage, setDonationMessage] = useState("");
+
   const [total, setTotal] = useState<string>("0");
 
+  //notification
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [notificationText, setNotificationText] = useState<{ message: string, transactionHash?: string }>({message: ""});
+  const [notificationText, setNotificationText] = useState<{ message: string, transactionHash?: string }>({ message: "" });
+
   const classes = useStyles();
 
   const calculateTotal = async () => {
-    const total = await donationContract.methods.total().call();
+    const total = await donationContract.methods.totalAmount().call();
     const jpyTotal = amountToJpy(total);
     setTotal(jpyTotal);
   }
@@ -153,28 +159,25 @@ function App() {
 
   useEffect(() => {
     donationContract.events.Donated({
-      fromBlock: 'latest'
-    }, function (error: any, event: any) {
-      console.log("events.Donated", event);
+      fromBlock: 'latest',
+      toBlock: 'pending'
+    }, function (error: any, event: EventData) {
+      const {userId, amount} = event.returnValues;
       setNotificationText({
-        message: `今、${amountToJpy(event.returnValues.amount)}の寄付がありました`,
+        message: `${userId}から${amountToJpy(amount)}の寄付がありました`,
         transactionHash: event.transactionHash
       });
       setNotificationOpen(true);
-      calculateTotal().then(r => {
-      });
+
+      setTransactions(t => [event, ...t]);
+      calculateTotal().then(r => {});
     });
 
-    donationContract.events.allEvents({
-      fromBlock: 'latest',
-      toBlock: 'pending'
-    }, (error: Error, events: EventData) => {
-      console.log("allEvents", error, events);
-      if (error) {
-        console.log(events.returnValues.userId);
-      }
-    });
-
+    donationContract.getPastEvents("Donated", {
+      fromBlock: 0
+    },).then((events) => {
+      setTransactions(events.reverse());
+    })
 
     calculateTotal().then(r => setLoading(false));
   }, []);
@@ -273,10 +276,10 @@ function App() {
                   <Tab label="全体の履歴" {...a11yProps(1)} />
                 </Tabs>
                 <TabPanel value={tabValue} index={0}>
-                  <SearchDonation />
+                  <SearchDonation/>
                 </TabPanel>
                 <TabPanel value={tabValue} index={1}>
-                  <TransactionHistory />
+                  <TransactionTable items={transactions} />
                 </TabPanel>
 
               </Grid>
@@ -285,7 +288,7 @@ function App() {
         </div>
       </main>
 
-      <Snackbar anchorOrigin={{vertical: "top", horizontal: "right"}} open={notificationOpen} autoHideDuration={10000}
+      <Snackbar anchorOrigin={{ vertical: "top", horizontal: "right" }} open={notificationOpen} autoHideDuration={10000}
                 onClose={handleCloseNotification}>
         <Alert onClose={handleCloseNotification} severity="success">
           {notificationText.message} <br/>
