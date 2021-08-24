@@ -1,0 +1,18 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "yarn run build && node build/dist/index.js"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
+    "twit": "^2.2.11"
+  },
+  "devDependencies": {
+    "@types/twit": "^2.2.30"
+  }
+}
