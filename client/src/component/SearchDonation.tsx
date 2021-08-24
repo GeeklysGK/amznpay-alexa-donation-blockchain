@@ -2,7 +2,7 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
+  CardHeader, Chip,
   CircularProgress,
   Container,
   Divider,
@@ -11,7 +11,7 @@ import {
   TextField,
   Typography
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { FormEvent, MouseEventHandler, useState } from "react";
 import amountToJpy from "../utils/amountToJpy";
 import donationContract from "../utils/donationContract";
 import ShortId from "./ShortId";
@@ -65,6 +65,11 @@ const SearchDonation = () => {
   const [buttonLoading, setButtonLoading] = useState(false);
   const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
 
+  const handlerFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleSearchButton().then(r => console.log("handleSearchButton"))
+  }
+
   const handleSearchButton = async () => {
     if (userId) {
       setButtonLoading(true);
@@ -104,41 +109,45 @@ const SearchDonation = () => {
               <Typography variant={"caption"} gutterBottom>
                 Sample Id2: <span>amzn1.account.AFYWLLBQXZ32EFHVUCFC47MXQKBA</span>
               </Typography>
-              <TextField value={userId}
-                         onChange={(event) => setUserId(event.target.value)}
-                         label="Amazon Pay user id" fullWidth/>
-              <div className={classes.wrapper}>
-                <Button variant="outlined"
-                        disabled={buttonLoading || !userId}
-                        onClick={handleSearchButton}
-                        color="primary" fullWidth
-                        className={classes.heroButtons}>
-                  検索
-                </Button>
-                {buttonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
-              </div>
+              <form onSubmit={handlerFormSubmit}>
+                <TextField value={userId}
+                           onChange={(event) => setUserId(event.target.value)}
+                           label="Amazon Pay user id" fullWidth/>
+                <div className={classes.wrapper}>
+                  <Button variant="outlined"
+                          disabled={buttonLoading || !userId}
+                          onClick={handleSearchButton}
+                          color="primary" fullWidth
+                          className={classes.heroButtons}>
+                    検索
+                  </Button>
+                  {buttonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
+                </div>
+              </form>
             </Grid>
           </Grid>
         </div>
 
-        {donationInfo && (
-          <Container>
-            <Typography><ShortId id={donationInfo.donationId}/></Typography>
+        {
+          donationInfo && (
+            <Container>
+              <Chip label={<ShortId id={donationInfo.donationId}/>} />
 
-            <Grid container spacing={4} alignItems={"center"} justifyContent="center">
-              <Grid item xs={6}>
-                <Typography align="center"
-                            variant={"h4"}>合計: {donationInfo.donationTotal}円<br/></Typography>
+              <Grid container spacing={4} alignItems={"center"} justifyContent="center">
+                <Grid item xs={6}>
+                  <Typography align="center"
+                              variant={"h4"}>合計: {donationInfo.donationTotal}円<br/></Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography align="center"
+                              variant={"h4"}>寄付回数: {donationInfo.donationCount} 回</Typography>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Typography align="center"
-                            variant={"h4"}>寄付回数: {donationInfo.donationCount} 回</Typography>
-              </Grid>
-            </Grid>
-            <Divider className={classes.divider}/>
-            <SearchResultTable rows={donationInfo.rows}/>
-          </Container>
-        )}
+              <Divider className={classes.divider}/>
+              <SearchResultTable rows={donationInfo.rows}/>
+            </Container>
+          )
+        }
 
       </CardContent>
     </Card>

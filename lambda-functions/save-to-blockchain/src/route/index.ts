@@ -85,7 +85,7 @@ router.post("/sqs", async (req, res) => {
     const message = {
       userId: req.body.userId || "test",
       oroId: req.body.oroId,
-      amount: 500
+      amount: 1000
     }
     sendMessageToSqs(message)
       .then((result) => res.json(result))

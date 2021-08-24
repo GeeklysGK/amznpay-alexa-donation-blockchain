@@ -135,12 +135,11 @@ function App() {
   const handleDonationButton = () => {
     setDonationButtonLoading(true);
     axios.post(`${API_SERVER_URL}/sqs`, {
-      amount: "500",
+      amount: "1000",
       accessToken: "dummy",
       oroId: "DONATION-FROM-WEB",
       userId: userIdForDonation || "test1"
     }).then((response) => {
-      console.log("response", response.data);
       setDonationMessage("寄付のリクエストを受け取りました、寄付が完了するまでしばらくお待ち下さい。");
       setTimeout(() => setDonationMessage(""), 6000);
     }).catch((error: any) => {
@@ -224,7 +223,7 @@ function App() {
                                 disabled={donationButtonLoading}
                                 fullWidth
                                 variant={"contained"}
-                                color={"primary"}>５００円寄付してみる</Button>
+                                color={"primary"}>{amountToJpy(1000)} 寄付してみる</Button>
                         {donationButtonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
                       </div>
                     </div>
@@ -281,7 +280,6 @@ function App() {
                 <TabPanel value={tabValue} index={1}>
                   <TransactionTable items={transactions} />
                 </TabPanel>
-
               </Grid>
             </Grid>
           </Container>
