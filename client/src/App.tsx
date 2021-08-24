@@ -1,10 +1,10 @@
-import React, {ReactNodeArray, useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Web3 from "web3";
 import AmazonPayDonationJson from "./contracts/AmazonPayDonation.json";
 import AccessibilityNewIcon from '@material-ui/icons/AccessibilityNew';
-import {API_SERVER_URL, RPC_NODE_URL} from "./constant";
+import { API_SERVER_URL, RPC_NODE_URL } from "./constant";
 import {
-  AppBar,
+  AppBar, Box,
   Button,
   Card,
   CardContent,
@@ -19,22 +19,21 @@ import {
   ListItem,
   ListItemText,
   makeStyles,
-  Paper, Snackbar,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  Snackbar, Tab, Tabs,
   TextField,
   Toolbar,
   Typography,
 } from "@material-ui/core";
 
 import Skeleton from '@material-ui/lab/Skeleton';
-import {AbiItem} from "web3-utils";
-import {Alert} from "@material-ui/lab";
+import { AbiItem } from "web3-utils";
+import { Alert } from "@material-ui/lab";
 import axios from "axios";
+import { EventData } from "web3-eth-contract";
+import donationContract, { contractAddress } from "./utils/donationContract";
+import amountToJpy from "./utils/amountToJpy";
+import SearchDonation from "./component/SearchDonation";
+import TransactionHistory from "./component/TransactionHistory";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -69,76 +68,48 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const web3 = new Web3(RPC_NODE_URL);
-const contractAddress = AmazonPayDonationJson.networks["3"].address;
-const donationContract = new web3.eth.Contract(AmazonPayDonationJson.abi as AbiItem[], contractAddress);
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: any;
+  value: any;
+}
 
-const ShortId = ({id}: { id: string }) => {
-  let showId = id;
-  if (id.length > 15) {
-    const start = id.slice(0, 10);
-    const end = id.slice(-5);
-    showId = `${start}...${end}`;
-  }
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
   return (
-    <>
-      {showId} の寄付金額の検索結果
-    </>
-  )
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`wrapped-tabpanel-${index}`}
+      aria-labelledby={`wrapped-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
 }
 
-const amountToJpy = (amount: number) => {
-  return new Intl.NumberFormat("ja-JP", {style: 'currency', currency: 'JPY'}).format(amount);
-}
-
-const DonationDetails: React.FC<{ userId: string, count: number }> = ({count, userId}) => {
-
-  const [details, setDetails] = useState<{ amount: string, oroId: string, timestamp?: string }>({
-    amount: "0",
-    oroId: "none"
-  });
-
-  useEffect(() => {
-    donationContract.methods.donations(userId, count).call().then((result: any) => {
-      const date = new Date(result.timestamp * 1000);
-      const timeStr = date.toLocaleTimeString("ja-JP")
-      const dateStr = date.toLocaleDateString("ja-JP")
-      const jpyTotal = amountToJpy(result.amount);
-      setDetails({amount: jpyTotal, oroId: result.oroId, timestamp: `${dateStr} ${timeStr}`});
-    });
-  }, [count, userId]);
-
-
-  return (<TableRow key={count}>
-    <TableCell component="th" scope="row">
-      {details.oroId}
-    </TableCell>
-    <TableCell>
-      {details.timestamp}
-    </TableCell>
-    <TableCell>
-      {details.amount}
-    </TableCell>
-  </TableRow>);
-}
-
-
-interface DonationInfo {
-  donationId: string;
-  donationCount: string;
-  donationTotal: string;
-  details: ReactNodeArray
+function a11yProps(index: any) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
 }
 
 function App() {
-  const [userId, setUserId] = useState<string | null>("");
+
   const [loading, setLoading] = useState(true);
+  const [tabValue, setTabValue] = React.useState(0);
   const [userIdForDonation, setUserIdForDonation] = useState("test");
-  const [buttonLoading, setButtonLoading] = useState(false);
   const [donationButtonLoading, setDonationButtonLoading] = useState(false);
   const [donationMessage, setDonationMessage] = useState("");
   const [total, setTotal] = useState<string>("0");
-  const [donationInfo, setDonationInfo] = useState<DonationInfo | null>(null);
+
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationText, setNotificationText] = useState<{ message: string, transactionHash?: string }>({message: ""});
   const classes = useStyles();
@@ -149,34 +120,12 @@ function App() {
     setTotal(jpyTotal);
   }
 
-  const handleSearchButton = async () => {
-    if (userId) {
-      setButtonLoading(true);
-      const donationCount = await donationContract.methods.countDonation(userId).call();
-      if (donationCount > 0) {
-        const donationTotal = await donationContract.methods.totalDonation(userId).call();
-        const donationTotalJpy = amountToJpy(donationTotal);
-        let rows: ReactNodeArray = [];
-        for (let i = donationCount - 1; i >= 0; i--) {
-          rows.push(<DonationDetails key={i} userId={userId} count={i}/>);
-        }
-        setDonationInfo({donationId: userId, donationCount, donationTotal: donationTotalJpy, details: rows});
-      } else {
-        setDonationInfo({donationId: userId, donationCount, donationTotal: "0", details: []});
-      }
-      setButtonLoading(false);
-    } else {
-      setDonationInfo(null);
-    }
-  }
-
   const handleCloseNotification = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
     setNotificationOpen(false);
   };
-
   const handleDonationButton = () => {
     setDonationButtonLoading(true);
     axios.post(`${API_SERVER_URL}/sqs`, {
@@ -197,12 +146,16 @@ function App() {
 
     });
   }
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+    setTabValue(newValue);
+  };
+
 
   useEffect(() => {
     donationContract.events.Donated({
       fromBlock: 'latest'
     }, function (error: any, event: any) {
-      console.log(event);
+      console.log("events.Donated", event);
       setNotificationText({
         message: `今、${amountToJpy(event.returnValues.amount)}の寄付がありました`,
         transactionHash: event.transactionHash
@@ -211,11 +164,19 @@ function App() {
       calculateTotal().then(r => {
       });
     });
+
+    donationContract.events.allEvents({
+      fromBlock: 'latest',
+      toBlock: 'pending'
+    }, (error: Error, events: EventData) => {
+      console.log("allEvents", error, events);
+      if (error) {
+        console.log(events.returnValues.userId);
+      }
+    });
+
+
     calculateTotal().then(r => setLoading(false));
-    return () => {
-      web3.eth.clearSubscriptions(() => {
-      })
-    }
   }, []);
 
 
@@ -307,77 +268,17 @@ function App() {
                 </Card>
               </Grid>
               <Grid item xs={12} md={8}>
-                <Card>
-                  <CardHeader title={"寄付検索"}/>
-                  <CardContent>
-                    <Typography variant="h6" align="center" color="textSecondary" paragraph>
-                      Amazon PayのUser Idで検索するといくら寄付をしたのかをブロックチェーンに問い合わせることができます
-                    </Typography>
-                    <div className={classes.heroButtons}>
-                      <Grid container spacing={2} justifyContent="center">
-                        <Grid item>
-                          <Typography variant={"caption"} gutterBottom>
-                            Sample Id1: <span>amzn1.account.AENQ5PFWRWURAEY4NV2DU5VRFQBQ</span>
-                          </Typography>
-                          <br/>
-                          <Typography variant={"caption"} gutterBottom>
-                            Sample Id2: <span>amzn1.account.AFYWLLBQXZ32EFHVUCFC47MXQKBA</span>
-                          </Typography>
-                          <TextField value={userId}
-                                     onChange={(event) => setUserId(event.target.value)}
-                                     label="Amazon Pay user id" fullWidth/>
-                          <div className={classes.wrapper}>
-                            <Button variant="outlined"
-                                    disabled={buttonLoading || !userId}
-                                    onClick={handleSearchButton}
-                                    color="primary" fullWidth
-                                    className={classes.heroButtons}>
-                              検索
-                            </Button>
-                            {buttonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
-                          </div>
-                        </Grid>
-                      </Grid>
-                    </div>
+                <Tabs value={tabValue} onChange={handleTabChange} aria-label="simple tabs example">
+                  <Tab label="寄付検索" {...a11yProps(0)} />
+                  <Tab label="全体の履歴" {...a11yProps(1)} />
+                </Tabs>
+                <TabPanel value={tabValue} index={0}>
+                  <SearchDonation />
+                </TabPanel>
+                <TabPanel value={tabValue} index={1}>
+                  <TransactionHistory />
+                </TabPanel>
 
-                    {donationInfo && (
-                      <Container>
-                        <Card>
-                          <CardHeader title={<ShortId id={donationInfo.donationId}/>}/>
-
-                          <CardContent>
-                            <Grid container spacing={4} alignItems={"center"} justifyContent="center">
-                              <Grid item xs={6}>
-                                <Typography align="center"
-                                            variant={"h4"}>合計: {donationInfo.donationTotal}円<br/></Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography align="center"
-                                            variant={"h4"}>寄付回数: {donationInfo.donationCount} 回</Typography>
-                              </Grid>
-                            </Grid>
-                            <Divider className={classes.divider}/>
-                            <TableContainer component={Paper}>
-                              <Table>
-                                <TableHead>
-                                  <TableRow>
-                                    <TableCell>Amazon決済ID</TableCell>
-                                    <TableCell>日付</TableCell>
-                                    <TableCell>寄付金額</TableCell>
-                                  </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                  {donationInfo.details}
-                                </TableBody>
-                              </Table>
-                            </TableContainer>
-                          </CardContent>
-                        </Card>
-                      </Container>
-                    )}
-
-                  </CardContent>
-                </Card>
               </Grid>
             </Grid>
           </Container>

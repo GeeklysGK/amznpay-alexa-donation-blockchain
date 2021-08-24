@@ -5,18 +5,18 @@ contract AmazonPayDonation {
 
   address public owner;
 
-  event Donated( string indexed userId, string indexed oroId, uint amount );
+  event Donated(bytes32 indexed userId, bytes32 indexed oroId, uint amount );
 
   struct Donation {
-    string userId;
-    string oroId;
+    bytes32 userId;
+    bytes32 oroId;
     uint amount;
     uint timestamp;
   }
 
   uint public total;
-  mapping(string => Donation[]) public donations;
-  mapping(string => uint) public totalDonation;
+  mapping(bytes32 => Donation[]) public donations;
+  mapping(bytes32 => uint) public totalDonation;
 
   constructor() {
     owner = msg.sender;
@@ -30,7 +30,7 @@ contract AmazonPayDonation {
     emit Donated(donationInfo.userId, donationInfo.oroId, donationInfo.amount);
   }
 
-  function countDonation(string memory userId) public view returns (uint) {
+  function countDonation(bytes32 userId) public view returns (uint) {
     return donations[userId].length;
   }
 
