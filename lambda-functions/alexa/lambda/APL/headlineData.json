@@ -1,0 +1,26 @@
+{
+    "headlineTemplateData": {
+        "type": "object",
+        "objectId": "headlineSample",
+        "properties": {
+            "backgroundImage": {
+                "contentDescription": null,
+                "smallSourceUrl": null,
+                "largeSourceUrl": null,
+                "sources": [
+                    {
+                        "url": "",
+                        "size": "large"
+                    }
+                ]
+            },
+            "textContent": {
+                "primaryText": {
+                    "type": "PlainText",
+                    "text": ""
+                }
+            },
+            "hintText": ""
+        }
+    }
+}
