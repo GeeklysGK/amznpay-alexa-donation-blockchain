@@ -1,0 +1,198 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "dev day 寄付デモ",
+            "intents": [{
+                    "name": "DecideDonationAmountIntent",
+                    "slots": [{
+                        "name": "AMOUNT",
+                        "type": "AMAZON.NUMBER"
+                    }],
+                    "samples": [
+                        "{AMOUNT} 円",
+                        "{AMOUNT} 円を寄付した",
+                        "{AMOUNT} 円を寄付して下さい",
+                        "{AMOUNT} 円寄付",
+                        "{AMOUNT} 円寄付して",
+                        "{AMOUNT} 円寄付して下さい",
+                        "{AMOUNT} 円寄付したい",
+                        "{AMOUNT} 円寄付します",
+                        "{AMOUNT} 円を寄付して",
+                        "{AMOUNT} 円に変更して",
+                        "違う {AMOUNT} 円で",
+                        "違う {AMOUNT} 円だった",
+                        "違う {AMOUNT} 円でした",
+                        "やっぱ {AMOUNT} 円",
+                        "私は {AMOUNT} 円を寄付したい"
+                    ]
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": [
+                        "もちろん",
+                        "よろしく",
+                        "します",
+                        "お願いします",
+                        "行います",
+                        "続けます",
+                        "はい行います",
+                        "はい続けます"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NoIntent",
+                    "samples": [
+                        "またにする",
+                        "またする",
+                        "今日はしない",
+                        "また今度",
+                        "あとで",
+                        "しない",
+                        "しません",
+                        "寄付しません",
+                        "寄付しない",
+                        "いえ"
+                    ]
+                },
+                {
+                    "name": "refundOrder",
+                    "samples": [
+                        "払い戻し",
+                        "注文の払い戻し",
+                        "返金してくれへん",
+                        "返金やってくれ",
+                        "返金やって",
+                        "返金してや",
+                        "返金頼むわ",
+                        "返金してくれ",
+                        "返金を頼みます",
+                        "返金を頼む",
+                        "返金をお願いします",
+                        "返金お願いします",
+                        "返金お願い",
+                        "返金をお願い",
+                        "返金して下さい",
+                        "返金してほしい",
+                        "返金して欲しい",
+                        "返金",
+                        "返金して",
+                        "寄付を返金して"
+                    ]
+                },
+                {
+                    "name": "cancelOrder",
+                    "samples": [
+                        "注文のキャンセル",
+                        "寄付のキャンセル",
+                        "寄付をキャンセル",
+                        "寄付をキャンセルして",
+                        "寄付キャンセルしてくれへん",
+                        "寄付キャンセルやってくれ",
+                        "寄付キャンセルやって",
+                        "寄付キャンセルしてや",
+                        "寄付キャンセル頼むわ",
+                        "寄付キャンセルしてくれ",
+                        "寄付キャンセルを頼みます",
+                        "寄付キャンセルを頼む",
+                        "寄付キャンセルをお願いします",
+                        "寄付キャンセルお願いします",
+                        "寄付キャンセルお願い",
+                        "寄付キャンセルをお願い",
+                        "寄付キャンセルして下さい",
+                        "寄付キャンセルしてほしい",
+                        "寄付キャンセルして欲しい",
+                        "寄付キャンセル",
+                        "寄付キャンセルして"
+                    ]
+                },
+                {
+                    "name": "AmountChangeIntent",
+                    "samples": [
+                        "金額変えて",
+                        "金額変更",
+                        "金額を変えて",
+                        "金額を変更して",
+                        "金額変えたい",
+                        "金額変更したい",
+                        "寄付額変えたい",
+                        "寄付額変更",
+                        "寄付額変更して",
+                        "寄付額を変えて",
+                        "寄付額を変えたい",
+                        "寄付金変更",
+                        "寄付金変更して",
+                        "寄付金変更したい",
+                        "寄付金を変えたい"
+                    ]
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.MoreIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateSettingsIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NextIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageUpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PreviousIntent",
+                    "samples": [
+                        "戻る",
+                        "戻りたい",
+                        "戻ってほしい",
+                        "トップに戻って",
+                        "トップに戻る",
+                        "トップに戻リたい",
+                        "トップに戻ってほしい",
+                        "トップに行って"
+                    ]
+                },
+                {
+                    "name": "AMAZON.ScrollRightIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollLeftIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollUpIntent",
+                    "samples": []
+                }
+            ],
+            "types": []
+        }
+    },
+    "version": "1"
+}
