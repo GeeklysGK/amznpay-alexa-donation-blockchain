@@ -216,8 +216,30 @@ function App() {
                   <CardContent>
                     <div>
                       <Alert color={"warning"} className={classes.alert}>
-                        <Typography variant={"caption"}>実際にお金がかかる事はありません！</Typography>
+                        <Typography variant={"caption"}>
+                          下記のボタンからTwitterでシェアすると寄付のテストをすることができます。<br />
+                          実際にお金がかかる事はありません！
+                        </Typography>
                       </Alert>
+                      <Grid container alignItems="center">
+                        <Grid item xs={2}>
+
+                        </Grid>
+
+                        <Grid item xs={8} style={{ textAlign: "center" }}>
+                          <Link href="https://twitter.com/share?ref_src=twsrc%5Etfw" style={{ padding: "30px !important" }}
+                                className="twitter-share-button"
+                                color={"primary"}
+                                data-text="AWS Dev Day 2021で「Amazon Pay for Alexa + ブロックチェーンを
+使った寄付アプリを実装！」 に参加してます。 #amazonpay #amazonpayblockchain @johna1203" data-size="large"
+                                data-show-count="false">Tweetにシェアするとテストの寄付ができます</Link>
+                        </Grid>
+
+                        <Grid item xs={2}>
+
+                        </Grid>
+                      </Grid>
+
 
                       {donationMessage && <Alert className={classes.alert}>{donationMessage}</Alert>}
 
@@ -232,13 +254,7 @@ function App() {
                                 variant={"contained"}
                                 color={"primary"}>{amountToJpy(1000)} 寄付してみる</Button>
                         {donationButtonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
-                        <Link href="https://twitter.com/share?ref_src=twsrc%5Etfw" className="twitter-share-button"
-                                color={"primary"}
-                                data-text="AWS Dev Day 2021で「Amazon Pay for Alexa + ブロックチェーンを
-使った寄付アプリを実装！」 に参加してます。 #amazonpay #amazonpayblockchain @johna1203" data-size="large"
-                                data-show-count="false">Tweetにシェアするとテストの寄付ができます</Link>
                       </div>
-
                     </div>
                     <Divider/>
                     <List>
