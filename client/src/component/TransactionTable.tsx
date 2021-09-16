@@ -14,6 +14,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ items }) => {
         <TableRow>
           <TableCell>Transaction Id</TableCell>
           <TableCell>Date</TableCell>
+          <TableCell>UserId</TableCell>
           <TableCell>AmazonPay注文ID</TableCell>
           <TableCell>寄付金額</TableCell>
         </TableRow>

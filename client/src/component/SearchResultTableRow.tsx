@@ -10,19 +10,20 @@ interface DonationDetailsProps {
   count: number;
 }
 
-type Donation = { userId: string; timestamp: number; datetime:string; amount: number; };
+type Donation = { userId: string; timestamp: number; datetime:string; amount: number; oroId: string; };
 
 const TransactionTableRow: React.FC<DonationDetailsProps> = ({ userId, count }) => {
 
   const [detail, setDetail] = useState<Donation>({
     userId: userId,
+    oroId: "",
     timestamp: 0,
     amount: 0,
     datetime: ""
   });
 
   useEffect(() => {
-    donationContract.methods.donations(userId, count).call()
+    donationContract.methods.donationByUser(userId, count).call()
       .then((donation: Donation) => {
         const datetime = timestampToDatetime(Number(donation.timestamp));
         setDetail({...donation, datetime: datetime});
@@ -31,7 +32,7 @@ const TransactionTableRow: React.FC<DonationDetailsProps> = ({ userId, count }) 
 
   return (<TableRow>
     <TableCell component="th" scope="row">
-      <ShortId id={detail.userId}/>
+      <ShortId id={detail.oroId}/>
     </TableCell>
     <TableCell component="th" scope="row">
       {detail.datetime}

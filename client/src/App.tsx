@@ -113,6 +113,7 @@ function App() {
   const [donationMessage, setDonationMessage] = useState("");
 
   const [total, setTotal] = useState<string>("0");
+  const [totalCount, setTotalCount] = useState<string>("0");
 
   //notification
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -122,8 +123,10 @@ function App() {
 
   const calculateTotal = async () => {
     const total = await donationContract.methods.totalDonationAmount().call();
+    const totalCount = await donationContract.methods.totalDonationCount().call();
     const jpyTotal = amountToJpy(total);
     setTotal(jpyTotal);
+    setTotalCount(totalCount);
   }
 
   const handleCloseNotification = (event?: React.SyntheticEvent, reason?: string) => {
@@ -160,7 +163,7 @@ function App() {
     donationContract.events.Donated({
       fromBlock: 'pending',
     }, function (error: any, event: EventData) {
-      const {userId, amount} = event.returnValues;
+      const { userId, amount } = event.returnValues;
       setNotificationText({
         message: `${userId} から ${amountToJpy(amount)} の寄付がありました`,
         transactionHash: event.transactionHash
@@ -168,7 +171,8 @@ function App() {
       setNotificationOpen(true);
 
       setTransactions(t => [event, ...t]);
-      calculateTotal().then(r => {});
+      calculateTotal().then(r => {
+      });
     });
 
     donationContract.getPastEvents("Donated", {
@@ -199,6 +203,9 @@ function App() {
             <Typography component="h2" variant="h2" align="center" color="textPrimary" gutterBottom>
               {loading ? <Skeleton animation="wave"/> : <><span>{total}</span>円</>}
             </Typography>
+            <Typography component="h5" variant="h5" align="center" color="textPrimary" gutterBottom>
+              {loading ? <Skeleton animation="wave"/> : <><span>寄付件数 {totalCount}</span>件</>}
+            </Typography>
 
             <Divider className={classes.divider}/>
 
@@ -225,7 +232,13 @@ function App() {
                                 variant={"contained"}
                                 color={"primary"}>{amountToJpy(1000)} 寄付してみる</Button>
                         {donationButtonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
+                        <Link href="https://twitter.com/share?ref_src=twsrc%5Etfw" className="twitter-share-button"
+                                color={"primary"}
+                                data-text="AWS Dev Day 2021で「Amazon Pay for Alexa + ブロックチェーンを
+使った寄付アプリを実装！」 に参加してます。 #amazonpay #amazonpayblockchain @johna1203" data-size="large"
+                                data-show-count="false">Tweetにシェアするとテストの寄付ができます</Link>
                       </div>
+
                     </div>
                     <Divider/>
                     <List>
@@ -278,7 +291,7 @@ function App() {
                   <SearchDonation/>
                 </TabPanel>
                 <TabPanel value={tabValue} index={1}>
-                  <TransactionTable items={transactions} />
+                  <TransactionTable items={transactions}/>
                 </TabPanel>
               </Grid>
             </Grid>

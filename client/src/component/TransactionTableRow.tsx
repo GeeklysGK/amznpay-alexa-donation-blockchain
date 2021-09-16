@@ -58,6 +58,9 @@ const TransactionTableRow: React.FC<DonationDetailsProps> = ({ transaction }) =>
             <ShortId id={transactionWithBlock.transaction.returnValues.userId} />
           </TableCell>
           <TableCell>
+            <ShortId id={transactionWithBlock.transaction.returnValues.oroId} />
+          </TableCell>
+          <TableCell>
             {amountToJpy(transactionWithBlock.transaction.returnValues.amount)}
           </TableCell>
         </TableRow>
