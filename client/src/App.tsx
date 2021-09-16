@@ -121,7 +121,7 @@ function App() {
   const classes = useStyles();
 
   const calculateTotal = async () => {
-    const total = await donationContract.methods.totalAmount().call();
+    const total = await donationContract.methods.totalDonationAmount().call();
     const jpyTotal = amountToJpy(total);
     setTotal(jpyTotal);
   }

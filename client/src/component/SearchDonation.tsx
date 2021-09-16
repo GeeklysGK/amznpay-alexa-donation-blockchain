@@ -75,7 +75,7 @@ const SearchDonation = () => {
       setButtonLoading(true);
       const donationCount = await donationContract.methods.countDonation(userId).call();
       if (donationCount > 0) {
-        const donationTotal = await donationContract.methods.totalDonation(userId).call();
+        const donationTotal = await donationContract.methods.totalDonationAmountByUser(userId).call();
         const donationTotalJpy = amountToJpy(donationTotal);
         let rows: any[] = [];
         for (let i = donationCount - 1; i >= 0; i--) {
