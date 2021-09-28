@@ -109,10 +109,14 @@ const SearchDonation = () => {
               <Typography variant={"caption"} gutterBottom>
                 Sample Id2: <span>amzn1.account.AFYWLLBQXZ32EFHVUCFC47MXQKBA</span>
               </Typography>
+              <br/>
+              <Typography variant={"caption"} gutterBottom>
+                Twitterのアカウント名でも検索する事もできます
+              </Typography>
               <form onSubmit={handlerFormSubmit}>
                 <TextField value={userId}
                            onChange={(event) => setUserId(event.target.value)}
-                           label="Amazon Pay user id" fullWidth/>
+                           label="Amazon Pay user id or Twitter account name" fullWidth/>
                 <div className={classes.wrapper}>
                   <Button variant="outlined"
                           disabled={buttonLoading || !userId}

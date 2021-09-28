@@ -11,7 +11,7 @@ const T = new Twit({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-const stream = T.stream('statuses/filter', {track:'#amazonpayblockchain'});
+const stream = T.stream('statuses/filter', {track:'#AWSDevDay2021AmazonPay'});
 
 stream.on('connect', () => {
   console.log('connect');
