@@ -230,8 +230,8 @@ function App() {
                           <Link href="https://twitter.com/share?ref_src=twsrc%5Etfw" style={{ padding: "30px !important" }}
                                 className="twitter-share-button"
                                 color={"primary"}
-                                data-text="AWS Dev Day 2021で「Amazon Pay for Alexa + ブロックチェーンを
-使った寄付アプリを実装！」 に参加してます。 #amazonpay #amazonpayblockchain @johna1203" data-size="large"
+                                data-text="AWS Dev Day 2021で「Alexaスキル向けAmazon Pay と ブロックチェーンを使った
+寄付アプリを実装」 に参加してます。 #amazonpay #AWSDevDay2021AmazonPay @johna1203 @amazonpay" data-size="large"
                                 data-show-count="false">Tweetにシェアするとテストの寄付ができます</Link>
                         </Grid>
 
@@ -243,18 +243,18 @@ function App() {
 
                       {donationMessage && <Alert className={classes.alert}>{donationMessage}</Alert>}
 
-                      <TextField label={"UserId"} value={userIdForDonation}
-                                 fullWidth
-                                 onChange={(e) => setUserIdForDonation(e.target.value)}/>
-                      <div className={classes.wrapper}>
-                        <Button onClick={handleDonationButton}
-                                className={classes.heroButtons}
-                                disabled={donationButtonLoading}
-                                fullWidth
-                                variant={"contained"}
-                                color={"primary"}>{amountToJpy(1000)} 寄付してみる</Button>
-                        {donationButtonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}
-                      </div>
+                      {/*<TextField label={"UserId"} value={userIdForDonation}*/}
+                      {/*           fullWidth*/}
+                      {/*           onChange={(e) => setUserIdForDonation(e.target.value)}/>*/}
+                      {/*<div className={classes.wrapper}>*/}
+                      {/*  <Button onClick={handleDonationButton}*/}
+                      {/*          className={classes.heroButtons}*/}
+                      {/*          disabled={donationButtonLoading}*/}
+                      {/*          fullWidth*/}
+                      {/*          variant={"contained"}*/}
+                      {/*          color={"primary"}>{amountToJpy(1000)} 寄付してみる</Button>*/}
+                      {/*  {donationButtonLoading && <CircularProgress size={24} className={classes.buttonProgress}/>}*/}
+                      {/*</div>*/}
                     </div>
                     <Divider/>
                     <List>
@@ -290,8 +290,8 @@ function App() {
                       <ListItem>
                         <ListItemText
                           primary={"Document"}
-                          secondary={<Link href={"https://johna1203.gitbook.io/amazon-pay-for-alexa"}
-                                           target={"_blank"}>Gitbook</Link>}
+                          secondary={<Link href={"https://developer.amazon.com/ja-JP/docs/alexa/amazon-pay-alexa/amazon-pay-overview.html"}
+                                           target={"_blank"}>Amazon Payのインテグレーションガイド</Link>}
                         />
                       </ListItem>
                     </List>
